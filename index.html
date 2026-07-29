@@ -314,15 +314,17 @@
         btn.disabled = true;
         resultDiv.style.display = "none";
 
-        try {
-          const response = await fetch("tiktok-downloader-production-b5f8.up.railway.app", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({
-              url: urlInput,
-              format_type: formatType,
-            }),
-          });
+       try {
+  // Tambahkan https:// di depan domain Railway
+  // Tambahkan endpoint jika ada (contoh: https://...railway.app/download)
+  const response = await fetch("https://tiktok-downloader-production-b5f8.up.railway.app/", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({
+      url: urlInput,
+      format_type: formatType,
+    }),
+  });
 
           const data = await response.json();
 
