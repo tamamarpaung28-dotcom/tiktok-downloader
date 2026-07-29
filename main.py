@@ -11,6 +11,7 @@ app = FastAPI()
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"],
+    allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
 )
@@ -19,7 +20,8 @@ class DownloadRequest(BaseModel):
     url: str
     format_type: str  # "video" atau "audio"
 
-@app.post("/api/info")
+# Disesuaikan ke /download agar sama dengan Fetch URL di Frontend
+@app.post("/download")
 async def get_tiktok_info(request: DownloadRequest):
     url = request.url.strip()
 
@@ -59,7 +61,7 @@ async def get_tiktok_info(request: DownloadRequest):
         except Exception as e:
             raise HTTPException(status_code=400, detail=f"Terjadi kesalahan: {str(e)}")
 
-# Ambil PORT dinamis dari Railway/Hosting
+# Ambil PORT dinamis dari Railway
 if __name__ == "__main__":
     port = int(os.environ.get("PORT", 8000))
-    uvicorn.run(app, host="0.0.0.0", port=port)
+    uvicorn.run("main:app", host="0.0.0.0", port=port)
