@@ -7,11 +7,11 @@ import uvicorn
 
 app = FastAPI()
 
-# Konfigurasi CORS penuh
+# 1. UBAH allow_credentials MENJADI False karena kita pakai allow_origins=["*"]
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"],
-    allow_credentials=True,
+    allow_credentials=False, 
     allow_methods=["*"],
     allow_headers=["*"],
 )
@@ -20,9 +20,13 @@ class DownloadRequest(BaseModel):
     url: str
     format_type: str  # "video" atau "audio"
 
-# Menerima request ke /info maupun /api/info agar tidak 404
+# 2. JALUR BELAKANG: Paksa tangkap request OPTIONS dari Browser (Preflight) agar statusnya 200 OK!
+@app.options("/info")
+async def preflight_handler():
+    return {"message": "CORS OK"}
+
+# 3. Route POST Utama
 @app.post("/info")
-@app.post("/api/info")
 async def get_tiktok_info(request: DownloadRequest):
     url = request.url.strip()
 
