@@ -7,7 +7,7 @@ import uvicorn
 
 app = FastAPI()
 
-# PENTING: CORS harus diizinkan untuk semua HTTP Method termasuk OPTIONS (Preflight)
+# Konfigurasi CORS penuh
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"],
@@ -20,8 +20,9 @@ class DownloadRequest(BaseModel):
     url: str
     format_type: str  # "video" atau "audio"
 
-# Disesuaikan ke /info (tanpa /api) sesuai dengan request dari Frontend Netlify
+# Menerima request ke /info maupun /api/info agar tidak 404
 @app.post("/info")
+@app.post("/api/info")
 async def get_tiktok_info(request: DownloadRequest):
     url = request.url.strip()
 
