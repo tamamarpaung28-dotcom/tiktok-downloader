@@ -7,7 +7,7 @@ import uvicorn
 
 app = FastAPI()
 
-# Izinkan CORS agar Frontend (Netlify) bisa akses Backend ini
+# PENTING: CORS harus diizinkan untuk semua HTTP Method termasuk OPTIONS (Preflight)
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"],
@@ -20,8 +20,8 @@ class DownloadRequest(BaseModel):
     url: str
     format_type: str  # "video" atau "audio"
 
-# Disesuaikan ke /download agar sama dengan Fetch URL di Frontend
-@app.post("/download")
+# Disesuaikan ke /info (tanpa /api) sesuai dengan request dari Frontend Netlify
+@app.post("/info")
 async def get_tiktok_info(request: DownloadRequest):
     url = request.url.strip()
 
@@ -37,7 +37,6 @@ async def get_tiktok_info(request: DownloadRequest):
             if data.get("code") == 0:
                 video_data = data.get("data", {})
                 
-                # Pilih link MP3 (music) atau MP4 (play)
                 if request.format_type == "audio":
                     download_link = video_data.get("music")
                 else:
@@ -61,7 +60,6 @@ async def get_tiktok_info(request: DownloadRequest):
         except Exception as e:
             raise HTTPException(status_code=400, detail=f"Terjadi kesalahan: {str(e)}")
 
-# Ambil PORT dinamis dari Railway
 if __name__ == "__main__":
-    port = int(os.environ.get("PORT", 8000))
+    port = int(os.environ.get("PORT", 8080))
     uvicorn.run("main:app", host="0.0.0.0", port=port)
